@@ -7,6 +7,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/Analysis/TargetTransformInfo.h"
+#include "llvm/ADT/SmallVector.h"
 #include "llvm/Analysis/CFG.h"
 #include "llvm/Analysis/LoopIterator.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
@@ -1285,9 +1286,10 @@ TargetTransformInfo::getCostOfKeepingLiveOverCall(ArrayRef<Type *> Tys) const {
   return TTIImpl->getCostOfKeepingLiveOverCall(Tys);
 }
 
-bool TargetTransformInfo::getTgtMemIntrinsic(IntrinsicInst *Inst,
-                                             MemIntrinsicInfo &Info) const {
-  return TTIImpl->getTgtMemIntrinsic(Inst, Info);
+std::pair<std::optional<MemIntrinsicInfo>,
+          std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+TargetTransformInfo::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
+  return TTIImpl->getTgtMemIntrinsic(Inst);
 }
 
 unsigned TargetTransformInfo::getAtomicMemIntrinsicMaxElementSize() const {

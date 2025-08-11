@@ -975,8 +975,10 @@ bool PPCTTIImpl::shouldBuildRelLookupTables() const {
   return BaseT::shouldBuildRelLookupTables();
 }
 
-bool PPCTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
-                                    MemIntrinsicInfo &Info) const {
+std::pair<std::optional<MemIntrinsicInfo>,
+          std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+PPCTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
+  MemIntrinsicInfo Info;
   switch (Inst->getIntrinsicID()) {
   case Intrinsic::ppc_altivec_lvx:
   case Intrinsic::ppc_altivec_lvxl:
@@ -993,7 +995,7 @@ bool PPCTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
     Info.PtrVal = Inst->getArgOperand(0);
     Info.ReadMem = true;
     Info.WriteMem = false;
-    return true;
+    return std::make_pair(Info, std::nullopt);
   }
   case Intrinsic::ppc_altivec_stvx:
   case Intrinsic::ppc_altivec_stvxl:
@@ -1010,7 +1012,7 @@ bool PPCTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
     Info.PtrVal = Inst->getArgOperand(1);
     Info.ReadMem = false;
     Info.WriteMem = true;
-    return true;
+    return std::make_pair(Info, std::nullopt);
   }
   case Intrinsic::ppc_stbcx:
   case Intrinsic::ppc_sthcx:
@@ -1019,13 +1021,12 @@ bool PPCTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
     Info.PtrVal = Inst->getArgOperand(0);
     Info.ReadMem = false;
     Info.WriteMem = true;
-    return true;
+    return std::make_pair(Info, std::nullopt);
   }
   default:
     break;
   }
-
-  return false;
+  return std::make_pair(std::nullopt, std::nullopt);
 }
 
 bool PPCTTIImpl::supportsTailCallFor(const CallBase *CB) const {

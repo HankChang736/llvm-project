@@ -69,8 +69,9 @@ public:
   bool canSaveCmp(Loop *L, BranchInst **BI, ScalarEvolution *SE, LoopInfo *LI,
                   DominatorTree *DT, AssumptionCache *AC,
                   TargetLibraryInfo *LibInfo) const override;
-  bool getTgtMemIntrinsic(IntrinsicInst *Inst,
-                          MemIntrinsicInfo &Info) const override;
+  std::pair<std::optional<MemIntrinsicInfo>,
+            std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+  getTgtMemIntrinsic(IntrinsicInst *Inst) const override;
   void getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                TTI::UnrollingPreferences &UP,
                                OptimizationRemarkEmitter *ORE) const override;

@@ -500,29 +500,32 @@ unsigned GCNTTIImpl::getMaxInterleaveFactor(ElementCount VF) const {
   return 8;
 }
 
-bool GCNTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
-                                       MemIntrinsicInfo &Info) const {
+std::pair<std::optional<MemIntrinsicInfo>,
+          std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+GCNTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
   switch (Inst->getIntrinsicID()) {
   case Intrinsic::amdgcn_ds_ordered_add:
   case Intrinsic::amdgcn_ds_ordered_swap: {
     auto *Ordering = dyn_cast<ConstantInt>(Inst->getArgOperand(2));
     auto *Volatile = dyn_cast<ConstantInt>(Inst->getArgOperand(4));
     if (!Ordering || !Volatile)
-      return false; // Invalid.
+      return std::make_pair(std::nullopt, std::nullopt);
 
     unsigned OrderingVal = Ordering->getZExtValue();
-    if (OrderingVal > static_cast<unsigned>(AtomicOrdering::SequentiallyConsistent))
-      return false;
+    if (OrderingVal >
+        static_cast<unsigned>(AtomicOrdering::SequentiallyConsistent))
+      return std::make_pair(std::nullopt, std::nullopt);
 
+    MemIntrinsicInfo Info;
     Info.PtrVal = Inst->getArgOperand(0);
     Info.Ordering = static_cast<AtomicOrdering>(OrderingVal);
     Info.ReadMem = true;
     Info.WriteMem = true;
     Info.IsVolatile = !Volatile->isZero();
-    return true;
+    return std::make_pair(Info, std::nullopt);
   }
   default:
-    return false;
+    return std::make_pair(std::nullopt, std::nullopt);
   }
 }
 

@@ -32,6 +32,7 @@
 #include "llvm/Support/BranchProbability.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/InstructionCost.h"
+#include "llvm/Transforms/Instrumentation/AddressSanitizerCommon.h"
 #include <functional>
 #include <optional>
 #include <utility>
@@ -1696,8 +1697,9 @@ public:
   /// will contain additional information - whether the intrinsic may write
   /// or read to memory, volatility and the pointer.  Info is undefined
   /// if false is returned.
-  LLVM_ABI bool getTgtMemIntrinsic(IntrinsicInst *Inst,
-                                   MemIntrinsicInfo &Info) const;
+  LLVM_ABI std::pair<std::optional<MemIntrinsicInfo>,
+                     std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+  getTgtMemIntrinsic(IntrinsicInst *Inst) const;
 
   /// \returns The maximum element size, in bytes, for an element
   /// unordered-atomic memory intrinsic.

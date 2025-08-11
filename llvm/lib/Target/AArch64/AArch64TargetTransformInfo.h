@@ -273,8 +273,9 @@ public:
   getOrCreateResultFromMemIntrinsic(IntrinsicInst *Inst, Type *ExpectedType,
                                     bool CanCreate = true) const override;
 
-  bool getTgtMemIntrinsic(IntrinsicInst *Inst,
-                          MemIntrinsicInfo &Info) const override;
+  std::pair<std::optional<MemIntrinsicInfo>,
+            std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+  getTgtMemIntrinsic(IntrinsicInst *Inst) const override;
 
   bool isElementTypeLegalForScalableVector(Type *Ty) const override {
     if (Ty->isPointerTy())
