@@ -509,7 +509,7 @@ GCNTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
     auto *Ordering = dyn_cast<ConstantInt>(Inst->getArgOperand(2));
     auto *Volatile = dyn_cast<ConstantInt>(Inst->getArgOperand(4));
     if (!Ordering || !Volatile)
-      return std::make_pair(std::nullopt, std::nullopt);
+      return std::make_pair(std::nullopt, std::nullopt); // Invalid
 
     unsigned OrderingVal = Ordering->getZExtValue();
     if (OrderingVal >
