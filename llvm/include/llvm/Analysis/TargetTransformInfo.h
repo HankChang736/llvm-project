@@ -24,6 +24,7 @@
 #include "llvm/ADT/APInt.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Analysis/IVDescriptors.h"
+#include "llvm/Analysis/InterestingMemoryOperand.h"
 #include "llvm/IR/FMF.h"
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/PassManager.h"
@@ -32,7 +33,6 @@
 #include "llvm/Support/BranchProbability.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/InstructionCost.h"
-#include "llvm/Transforms/Instrumentation/AddressSanitizerCommon.h"
 #include <functional>
 #include <optional>
 #include <utility>
