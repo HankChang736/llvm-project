@@ -2674,13 +2674,14 @@ void RISCVTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
   BaseT::getPeelingPreferences(L, SE, PP);
 }
 
-std::pair<std::optional<MemIntrinsicInfo>,
-          std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
 RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
   const DataLayout &DL = getDataLayout();
   Intrinsic::ID IID = Inst->getIntrinsicID();
   LLVMContext &C = Inst->getContext();
   bool HasMask = false;
+  MemIntrinsicInfo Info;
+  SmallVector<InterestingMemoryOperand, 1> Interesting;
   switch (IID) {
   case Intrinsic::riscv_vle_mask:
   case Intrinsic::riscv_vse_mask:
@@ -2693,7 +2694,6 @@ RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
     // riscv_vle_mask(merge, ptr, mask, vl, policy)
     // riscv_vse(val, ptr, vl)
     // riscv_vse_mask(val, ptr, mask, vl, policy)
-    SmallVector<InterestingMemoryOperand, 1> Interesting;
     bool IsWrite = Inst->getType()->isVoidTy();
     Type *Ty = IsWrite ? Inst->getArgOperand(0)->getType() : Inst->getType();
     const auto *RVVIInfo = RISCVVIntrinsicsTable::getRISCVVIntrinsicInfo(IID);
@@ -2708,7 +2708,7 @@ RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
     Value *EVL = Inst->getArgOperand(VLIndex);
     Interesting.emplace_back(Inst, PtrOperandNo, IsWrite, Ty, Alignment, Mask,
                              EVL);
-    return std::make_pair(std::nullopt, Interesting);
+    break;
   }
   case Intrinsic::riscv_vlse_mask:
   case Intrinsic::riscv_vsse_mask:
@@ -2721,7 +2721,6 @@ RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
     // riscv_vlse_mask(merge, ptr, stride, mask, vl, policy)
     // riscv_vsse(val, ptr, stride, vl)
     // riscv_vsse_mask(val, ptr, stride, mask, vl, policy)
-    SmallVector<InterestingMemoryOperand, 1> Interesting;
     bool IsWrite = Inst->getType()->isVoidTy();
     Type *Ty = IsWrite ? Inst->getArgOperand(0)->getType() : Inst->getType();
     const auto *RVVIInfo = RISCVVIntrinsicsTable::getRISCVVIntrinsicInfo(IID);
@@ -2747,10 +2746,10 @@ RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
     Value *EVL = Inst->getArgOperand(VLIndex);
     Interesting.emplace_back(Inst, PtrOperandNo, IsWrite, Ty, Alignment, Mask,
                              EVL, Stride);
-    return std::make_pair(std::nullopt, Interesting);
+    break;
   }
   }
-  return std::make_pair(std::nullopt, std::nullopt);
+  return std::make_pair(Info, Interesting);
 }
 
 unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) const {

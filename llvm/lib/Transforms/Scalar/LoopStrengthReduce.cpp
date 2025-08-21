@@ -1018,11 +1018,10 @@ static bool isAddressUse(const TargetTransformInfo &TTI,
         isAddress = true;
       break;
     default: {
-      std::pair<std::optional<MemIntrinsicInfo>,
-                std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+      std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
           MemInfo = TTI.getTgtMemIntrinsic(II);
-      if (MemInfo.first != std::nullopt) {
-        if (MemInfo.first->PtrVal == OperandVal)
+      if (MemInfo.first.PtrVal != nullptr) {
+        if (MemInfo.first.PtrVal == OperandVal)
           isAddress = true;
       }
     }
@@ -1076,12 +1075,11 @@ static MemAccessTy getAccessType(const TargetTransformInfo &TTI,
           II->getArgOperand(1)->getType()->getPointerAddressSpace();
       break;
     default: {
-      std::pair<std::optional<MemIntrinsicInfo>,
-                std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+      std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
           MemInfo = TTI.getTgtMemIntrinsic(II);
-      if (MemInfo.first != std::nullopt && MemInfo.first->PtrVal) {
+      if (MemInfo.first.PtrVal) {
         AccessTy.AddrSpace =
-            MemInfo.first->PtrVal->getType()->getPointerAddressSpace();
+            MemInfo.first.PtrVal->getType()->getPointerAddressSpace();
       }
 
       break;

@@ -1697,8 +1697,7 @@ public:
   /// will contain additional information - whether the intrinsic may write
   /// or read to memory, volatility and the pointer.  Info is undefined
   /// if false is returned.
-  LLVM_ABI std::pair<std::optional<MemIntrinsicInfo>,
-                     std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+  LLVM_ABI std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
   getTgtMemIntrinsic(IntrinsicInst *Inst) const;
 
   /// \returns The maximum element size, in bytes, for an element

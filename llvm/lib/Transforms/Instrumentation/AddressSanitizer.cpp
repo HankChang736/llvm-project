@@ -1573,12 +1573,10 @@ void AddressSanitizer::getInterestingMemoryOperands(
     }
     default:
       if (auto *II = dyn_cast<IntrinsicInst>(I)) {
-        std::pair<std::optional<MemIntrinsicInfo>,
-                  std::optional<SmallVector<InterestingMemoryOperand, 1>>>
-            MemInfo;
-        MemInfo = TTI->getTgtMemIntrinsic(II);
-        if (MemInfo.second != std::nullopt)
-          Interesting = *MemInfo.second;
+        std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
+            MemInfo = TTI->getTgtMemIntrinsic(II);
+        if (!MemInfo.second.empty())
+          Interesting = MemInfo.second;
         return;
       }
       for (unsigned ArgNo = 0; ArgNo < CI->arg_size(); ArgNo++) {

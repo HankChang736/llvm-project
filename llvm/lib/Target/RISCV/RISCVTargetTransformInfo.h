@@ -158,8 +158,7 @@ public:
   void getPeelingPreferences(Loop *L, ScalarEvolution &SE,
                              TTI::PeelingPreferences &PP) const override;
 
-  std::pair<std::optional<MemIntrinsicInfo>,
-            std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+  std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
   getTgtMemIntrinsic(IntrinsicInst *Inst) const override;
 
   unsigned getMinVectorRegisterBitWidth() const override {

@@ -5125,10 +5125,10 @@ Value *AArch64TTIImpl::getOrCreateResultFromMemIntrinsic(IntrinsicInst *Inst,
   }
 }
 
-std::pair<std::optional<MemIntrinsicInfo>,
-          std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
 AArch64TTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
   MemIntrinsicInfo Info;
+  SmallVector<InterestingMemoryOperand, 1> Interesting;
   switch (Inst->getIntrinsicID()) {
   default:
     break;
@@ -5150,7 +5150,7 @@ AArch64TTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
 
   switch (Inst->getIntrinsicID()) {
   default:
-    return std::make_pair(std::nullopt, std::nullopt);
+    break;
   case Intrinsic::aarch64_neon_ld2:
   case Intrinsic::aarch64_neon_st2:
     Info.MatchingId = VECTOR_LDST_TWO_ELEMENTS;
@@ -5164,7 +5164,7 @@ AArch64TTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
     Info.MatchingId = VECTOR_LDST_FOUR_ELEMENTS;
     break;
   }
-  return std::make_pair(Info, std::nullopt);
+  return std::make_pair(Info, Interesting);
 }
 
 /// See if \p I should be considered for address type promotion. We check if \p

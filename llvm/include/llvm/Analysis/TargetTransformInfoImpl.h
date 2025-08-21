@@ -975,10 +975,11 @@ public:
     return 0;
   }
 
-  virtual std::pair<std::optional<MemIntrinsicInfo>,
-                    std::optional<SmallVector<InterestingMemoryOperand, 1>>>
+  virtual std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
   getTgtMemIntrinsic(IntrinsicInst *Inst) const {
-    return std::make_pair(std::nullopt, std::nullopt);
+    MemIntrinsicInfo Info;
+    SmallVector<InterestingMemoryOperand, 1> Interesting;
+    return std::make_pair(Info, Interesting);
   }
 
   virtual unsigned getAtomicMemIntrinsicMaxElementSize() const {
