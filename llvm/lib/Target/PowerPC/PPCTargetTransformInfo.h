@@ -70,8 +70,8 @@ public:
                   DominatorTree *DT, AssumptionCache *AC,
                   TargetLibraryInfo *LibInfo) const override;
 
-  std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
-  getTgtMemIntrinsic(IntrinsicInst *Inst) const override;
+  bool getTgtMemIntrinsic(IntrinsicInst *Inst,
+                          MemIntrinsicInfo &Info) const override;
 
   void getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                TTI::UnrollingPreferences &UP,

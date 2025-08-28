@@ -808,10 +808,7 @@ private:
       : Inst(Inst) {
       if (IntrinsicInst *II = dyn_cast<IntrinsicInst>(Inst)) {
         IntrID = II->getIntrinsicID();
-        std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
-            MemInfo = TTI.getTgtMemIntrinsic(II);
-        if (MemInfo.first.PtrVal != nullptr) {
-          Info = MemInfo.first;
+        if (TTI.getTgtMemIntrinsic(II, Info)) {
           return;
         }
         if (isHandledNonTargetIntrinsic(IntrID)) {

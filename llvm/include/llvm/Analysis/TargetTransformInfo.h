@@ -88,6 +88,8 @@ struct MemIntrinsicInfo {
   bool WriteMem = false;
   bool IsVolatile = false;
 
+  SmallVector<InterestingMemoryOperand, 1> Interesting;
+
   bool isUnordered() const {
     return (Ordering == AtomicOrdering::NotAtomic ||
             Ordering == AtomicOrdering::Unordered) &&
@@ -1697,8 +1699,8 @@ public:
   /// will contain additional information - whether the intrinsic may write
   /// or read to memory, volatility and the pointer.  Info is undefined
   /// if false is returned.
-  LLVM_ABI std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
-  getTgtMemIntrinsic(IntrinsicInst *Inst) const;
+  LLVM_ABI bool getTgtMemIntrinsic(IntrinsicInst *Inst,
+                                   MemIntrinsicInfo &Info) const;
 
   /// \returns The maximum element size, in bytes, for an element
   /// unordered-atomic memory intrinsic.

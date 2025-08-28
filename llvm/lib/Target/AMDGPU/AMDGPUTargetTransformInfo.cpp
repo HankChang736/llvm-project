@@ -500,34 +500,31 @@ unsigned GCNTTIImpl::getMaxInterleaveFactor(ElementCount VF) const {
   return 8;
 }
 
-std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
-GCNTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
-  MemIntrinsicInfo Info;
-  SmallVector<InterestingMemoryOperand, 1> Interesting;
+bool GCNTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
+                                    MemIntrinsicInfo &Info) const {
   switch (Inst->getIntrinsicID()) {
   case Intrinsic::amdgcn_ds_ordered_add:
   case Intrinsic::amdgcn_ds_ordered_swap: {
     auto *Ordering = dyn_cast<ConstantInt>(Inst->getArgOperand(2));
     auto *Volatile = dyn_cast<ConstantInt>(Inst->getArgOperand(4));
     if (!Ordering || !Volatile)
-      break; // Invalid
+      return false; // Invalid
 
     unsigned OrderingVal = Ordering->getZExtValue();
     if (OrderingVal >
         static_cast<unsigned>(AtomicOrdering::SequentiallyConsistent))
-      break;
+      return false;
 
     Info.PtrVal = Inst->getArgOperand(0);
     Info.Ordering = static_cast<AtomicOrdering>(OrderingVal);
     Info.ReadMem = true;
     Info.WriteMem = true;
     Info.IsVolatile = !Volatile->isZero();
-    break;
+    return true;
   }
   default:
-    break;
+    return false;
   }
-  return std::make_pair(Info, Interesting);
 }
 
 InstructionCost GCNTTIImpl::getArithmeticInstrCost(

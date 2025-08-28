@@ -1573,10 +1573,9 @@ void AddressSanitizer::getInterestingMemoryOperands(
     }
     default:
       if (auto *II = dyn_cast<IntrinsicInst>(I)) {
-        std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
-            MemInfo = TTI->getTgtMemIntrinsic(II);
-        if (!MemInfo.second.empty())
-          Interesting = MemInfo.second;
+        MemIntrinsicInfo IntrInfo;
+        if (TTI->getTgtMemIntrinsic(II, IntrInfo))
+          Interesting = IntrInfo.Interesting;
         return;
       }
       for (unsigned ArgNo = 0; ArgNo < CI->arg_size(); ArgNo++) {
@@ -2995,7 +2994,7 @@ bool AddressSanitizer::suppressInstrumentationSiteForDebug(int &Instrumented) {
 
 bool AddressSanitizer::instrumentFunction(Function &F,
                                           const TargetLibraryInfo *TLI,
-					  const TargetTransformInfo *TTI) {
+                                          const TargetTransformInfo *TTI) {
   bool FunctionModified = false;
 
   // Do not apply any instrumentation for naked functions.

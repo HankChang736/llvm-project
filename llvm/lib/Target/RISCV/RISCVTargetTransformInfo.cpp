@@ -2674,14 +2674,12 @@ void RISCVTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
   BaseT::getPeelingPreferences(L, SE, PP);
 }
 
-std::pair<MemIntrinsicInfo, SmallVector<InterestingMemoryOperand, 1>>
-RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
+bool RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
+                                      MemIntrinsicInfo &Info) const {
   const DataLayout &DL = getDataLayout();
   Intrinsic::ID IID = Inst->getIntrinsicID();
   LLVMContext &C = Inst->getContext();
   bool HasMask = false;
-  MemIntrinsicInfo Info;
-  SmallVector<InterestingMemoryOperand, 1> Interesting;
   switch (IID) {
   case Intrinsic::riscv_vle_mask:
   case Intrinsic::riscv_vse_mask:
@@ -2706,9 +2704,9 @@ RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
     if (HasMask)
       Mask = Inst->getArgOperand(VLIndex - 1);
     Value *EVL = Inst->getArgOperand(VLIndex);
-    Interesting.emplace_back(Inst, PtrOperandNo, IsWrite, Ty, Alignment, Mask,
-                             EVL);
-    break;
+    Info.Interesting.emplace_back(Inst, PtrOperandNo, IsWrite, Ty, Alignment,
+                                  Mask, EVL);
+    return true;
   }
   case Intrinsic::riscv_vlse_mask:
   case Intrinsic::riscv_vsse_mask:
@@ -2744,12 +2742,12 @@ RISCVTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst) const {
     if (HasMask)
       Mask = Inst->getArgOperand(VLIndex - 1);
     Value *EVL = Inst->getArgOperand(VLIndex);
-    Interesting.emplace_back(Inst, PtrOperandNo, IsWrite, Ty, Alignment, Mask,
-                             EVL, Stride);
-    break;
+    Info.Interesting.emplace_back(Inst, PtrOperandNo, IsWrite, Ty, Alignment,
+                                  Mask, EVL, Stride);
+    return true;
   }
   }
-  return std::make_pair(Info, Interesting);
+  return false;
 }
 
 unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) const {
