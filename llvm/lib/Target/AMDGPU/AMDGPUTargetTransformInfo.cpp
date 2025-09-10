@@ -511,8 +511,7 @@ bool GCNTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
       return false; // Invalid.
 
     unsigned OrderingVal = Ordering->getZExtValue();
-    if (OrderingVal >
-        static_cast<unsigned>(AtomicOrdering::SequentiallyConsistent))
+    if (OrderingVal > static_cast<unsigned>(AtomicOrdering::SequentiallyConsistent))
       return false;
 
     Info.PtrVal = Inst->getArgOperand(0);
