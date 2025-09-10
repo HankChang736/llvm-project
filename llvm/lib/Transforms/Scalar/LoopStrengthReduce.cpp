@@ -1079,6 +1079,7 @@ static MemAccessTy getAccessType(const TargetTransformInfo &TTI,
         AccessTy.AddrSpace
           = IntrInfo.PtrVal->getType()->getPointerAddressSpace();
       }
+
       break;
     }
     }
