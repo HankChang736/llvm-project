@@ -1024,6 +1024,7 @@ bool PPCTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
   default:
     break;
   }
+
   return false;
 }
 

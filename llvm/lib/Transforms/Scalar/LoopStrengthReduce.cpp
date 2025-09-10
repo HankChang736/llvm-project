@@ -1076,8 +1076,8 @@ static MemAccessTy getAccessType(const TargetTransformInfo &TTI,
     default: {
       MemIntrinsicInfo IntrInfo;
       if (TTI.getTgtMemIntrinsic(II, IntrInfo) && IntrInfo.PtrVal) {
-        AccessTy.AddrSpace =
-            IntrInfo.PtrVal->getType()->getPointerAddressSpace();
+        AccessTy.AddrSpace
+          = IntrInfo.PtrVal->getType()->getPointerAddressSpace();
       }
       break;
     }

@@ -808,9 +808,8 @@ private:
       : Inst(Inst) {
       if (IntrinsicInst *II = dyn_cast<IntrinsicInst>(Inst)) {
         IntrID = II->getIntrinsicID();
-        if (TTI.getTgtMemIntrinsic(II, Info)) {
+        if (TTI.getTgtMemIntrinsic(II, Info))
           return;
-        }
         if (isHandledNonTargetIntrinsic(IntrID)) {
           switch (IntrID) {
           case Intrinsic::masked_load:

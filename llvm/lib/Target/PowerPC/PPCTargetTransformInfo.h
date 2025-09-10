@@ -69,7 +69,6 @@ public:
   bool canSaveCmp(Loop *L, BranchInst **BI, ScalarEvolution *SE, LoopInfo *LI,
                   DominatorTree *DT, AssumptionCache *AC,
                   TargetLibraryInfo *LibInfo) const override;
-
   bool getTgtMemIntrinsic(IntrinsicInst *Inst,
                           MemIntrinsicInfo &Info) const override;
 

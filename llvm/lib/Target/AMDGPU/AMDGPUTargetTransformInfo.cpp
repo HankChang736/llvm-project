@@ -501,14 +501,14 @@ unsigned GCNTTIImpl::getMaxInterleaveFactor(ElementCount VF) const {
 }
 
 bool GCNTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
-                                    MemIntrinsicInfo &Info) const {
+                                       MemIntrinsicInfo &Info) const {
   switch (Inst->getIntrinsicID()) {
   case Intrinsic::amdgcn_ds_ordered_add:
   case Intrinsic::amdgcn_ds_ordered_swap: {
     auto *Ordering = dyn_cast<ConstantInt>(Inst->getArgOperand(2));
     auto *Volatile = dyn_cast<ConstantInt>(Inst->getArgOperand(4));
     if (!Ordering || !Volatile)
-      return false; // Invalid
+      return false; // Invalid.
 
     unsigned OrderingVal = Ordering->getZExtValue();
     if (OrderingVal >
